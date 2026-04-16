@@ -1,73 +1,84 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const profile = {
+  name: "Mayukh Ghosh",
+  title: "Student • Problem Solver • Builder",
+  tagline: "I build clean, thoughtful projects across DSA, web development, and machine learning.",
+  about:
+    "I enjoy solving hard problems, learning deeply, and turning ideas into polished projects. This portfolio is designed to feel personal, fast, and easy to explore.",
+  education: "B.Tech student • KIIT",
+  email: "23052334@kiit.ac.in",
+  github: "https://github.com/MAECDWBG",
+  linkedin: "https://linkedin.com/in/mayukh-ghosh-0259153b5",
+  resume: "#",
+};
+
+const projects = [
+  {
+    title: "Movie Recommender System",
+    type: "ML Project",
+    description:
+      "A content-based recommender using movie metadata, similarity search, and a clean result interface.",
+    stack: ["Python", "Pandas", "Scikit-learn", "TMDB Dataset"],
+    links: { live: "#", code: "#" },
+    featured: true,
+  },
+  {
+    title: "Servlet Assignment Hub",
+    type: "Java Web",
+    description:
+      "A collection of servlet mini-apps including login validation, student registration, calculator, and dynamic pages.",
+    stack: ["Java", "Servlets", "Tomcat 9", "Eclipse"],
+    links: { live: "#", code: "#" },
+    featured: true,
+  },
+  {
+    title: "180-Day DSA Tracker",
+    type: "Productivity",
+    description:
+      "A tracker for daily DSA practice with topic tags, solved problems, streaks, and revision sections.",
+    stack: ["React", "TypeScript", "Tailwind"],
+    links: { live: "#", code: "#" },
+    featured: false,
+  },
+];
 
 const skills = [
   "C++",
   "Python",
   "Java",
-  "HTML",
-  "CSS",
-  "JavaScript",
-  "Machine Learning",
-  "DSA",
-  "Servlets",
+  "SQL",
   "React",
   "Tailwind",
-  "SQL",
+  "Machine Learning",
+  "DSA",
+  "Git",
+  "Tomcat",
 ];
 
-const projects = [
-  {
-    title: "Movie Recommender System",
-    description:
-      "A recommendation engine built with machine learning, metadata processing, and similarity-based search to suggest relevant movies.",
-    stack: ["Python", "Pandas", "Scikit-learn", "Jupyter"],
-    tag: "ML Project",
-  },
-  {
-    title: "Java Servlet Web Apps",
-    description:
-      "A collection of dynamic web applications featuring login validation, calculator logic, form handling, and registration workflows.",
-    stack: ["Java", "Servlets", "Tomcat", "HTML", "CSS"],
-    tag: "Backend + Web",
-  },
-  {
-    title: "DSA Problem Solving Journey",
-    description:
-      "A structured coding journey focused on algorithms, STL, arrays, graphs, recursion, and interview-style problem solving.",
-    stack: ["C++", "STL", "Algorithms"],
-    tag: "Core CS",
-  },
+const sections = [
+  { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "projects", label: "Projects" },
+  { id: "contact", label: "Contact" },
 ];
 
-const stats = [
-  { value: "3+", label: "Project Areas" },
-  { value: "180-Day", label: "DSA Discipline" },
-  { value: "CSE", label: "Student Builder" },
-];
+function cn(...values) {
+  return values.filter(Boolean).join(" ");
+}
 
-const navItems = [
-  { label: "About", href: "#about" },
-  { label: "Skills", href: "#skills" },
-  { label: "Projects", href: "#projects" },
-  { label: "Contact", href: "#contact" },
-];
-
-function SectionTitle({ eyebrow, title, subtitle }) {
-  return (
-    <div>
-      <p className="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-300">{eyebrow}</p>
-      <h2 className="mt-2 text-3xl font-bold text-white md:text-4xl">{title}</h2>
-      {subtitle ? <p className="mt-3 max-w-2xl leading-8 text-slate-400">{subtitle}</p> : null}
-    </div>
-  );
+function getAutoThemeFromHour(hour) {
+  return hour >= 7 && hour < 18 ? "light" : "dark";
 }
 
 function runSelfTests() {
   const results = [];
-  results.push({ name: "skills list has items", pass: skills.length > 0 });
-  results.push({ name: "projects list has items", pass: projects.length > 0 });
-  results.push({ name: "nav contains contact", pass: navItems.some((item) => item.href === "#contact") });
+  results.push({ name: "sections include contact", pass: sections.some((section) => section.id === "contact") });
+  results.push({ name: "daytime is light", pass: getAutoThemeFromHour(10) === "light" });
+  results.push({ name: "night is dark", pass: getAutoThemeFromHour(22) === "dark" });
+  results.push({ name: "skills exist", pass: skills.length >= 6 });
+  results.push({ name: "projects exist", pass: projects.length >= 3 });
   return results;
 }
 
@@ -76,321 +87,467 @@ if (selfTests.some((test) => !test.pass)) {
   throw new Error("Internal test failure: portfolio data is incomplete.");
 }
 
-export default function App() {
+function Panel({ children, className = "" }) {
+  return <div className={className}>{children}</div>;
+}
+
+function PanelBody({ children, className = "" }) {
+  return <div className={className}>{children}</div>;
+}
+
+function ActionButton({ children, className = "", ...props }) {
   return (
-    <div className="min-h-screen scroll-smooth bg-slate-950 text-slate-100 selection:bg-cyan-400/30 selection:text-white">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_26%),radial-gradient(circle_at_left,rgba(168,85,247,0.12),transparent_28%),linear-gradient(to_bottom,rgba(15,23,42,1),rgba(2,6,23,1))]" />
+    <button
+      className={cn(
+        "inline-flex items-center justify-center gap-2 rounded-2xl border px-4 py-2 text-sm font-medium transition duration-200",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
 
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/70 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 md:px-10 lg:px-12">
-          <div className="flex items-center justify-between gap-4">
-            <a href="#top" className="text-lg font-bold tracking-tight text-white">
-              Mayukh Ghosh
-            </a>
+function Tag({ children, className = "" }) {
+  return (
+    <span className={cn("inline-flex items-center rounded-xl border px-3 py-1 text-sm font-medium", className)}>
+      {children}
+    </span>
+  );
+}
 
-            <a
-              href="#contact"
-              className="hidden rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-400/20 md:inline-flex"
-            >
-              Let’s Connect
-            </a>
-          </div>
+function Icon({ name, className = "h-4 w-4" }) {
+  const shared = {
+    className,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true,
+  };
 
-          <nav className="mt-4 flex flex-wrap gap-2 md:hidden">
-            {navItems.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/10 hover:text-white"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
+  switch (name) {
+    case "github":
+      return (
+        <svg {...shared}>
+          <path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.1-1.5 6.1-6.7A5.2 5.2 0 0 0 19 4.8 4.8 4.8 0 0 0 18.9 1S17.7.7 15 2.5a13.4 13.4 0 0 0-6 0C6.3.7 5.1 1 5.1 1A4.8 4.8 0 0 0 5 4.8 5.2 5.2 0 0 0 3.8 8.8c0 5.2 3.1 6.4 6.1 6.7a3.4 3.4 0 0 0-.9 2.6V22" />
+        </svg>
+      );
+    case "linkedin":
+      return (
+        <svg {...shared}>
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
+          <rect x="2" y="9" width="4" height="12" />
+          <circle cx="4" cy="4" r="2" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case "mail":
+      return (
+        <svg {...shared}>
+          <rect x="3" y="5" width="18" height="14" rx="2" />
+          <path d="m3 7 9 6 9-6" />
+        </svg>
+      );
+    case "external":
+      return (
+        <svg {...shared}>
+          <path d="M7 17 17 7" />
+          <path d="M7 7h10v10" />
+        </svg>
+      );
+    case "code":
+      return (
+        <svg {...shared}>
+          <path d="m16 18 6-6-6-6" />
+          <path d="m8 6-6 6 6 6" />
+        </svg>
+      );
+    case "user":
+      return (
+        <svg {...shared}>
+          <path d="M20 21a8 8 0 1 0-16 0" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      );
+    case "moon":
+      return (
+        <svg {...shared}>
+          <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z" />
+        </svg>
+      );
+    case "sun":
+      return (
+        <svg {...shared}>
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2" />
+          <path d="M12 20v2" />
+          <path d="m4.93 4.93 1.41 1.41" />
+          <path d="m17.66 17.66 1.41 1.41" />
+          <path d="M2 12h2" />
+          <path d="M20 12h2" />
+          <path d="m6.34 17.66-1.41 1.41" />
+          <path d="m19.07 4.93-1.41 1.41" />
+        </svg>
+      );
+    case "rain":
+      return (
+        <svg {...shared}>
+          <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25" />
+          <path d="M8 19v2" />
+          <path d="M12 17v4" />
+          <path d="M16 19v2" />
+        </svg>
+      );
+    case "snow":
+      return (
+        <svg {...shared}>
+          <path d="m10 4 2 2 2-2" />
+          <path d="M12 2v20" />
+          <path d="m4.93 4.93 1.41 1.41" />
+          <path d="m17.66 17.66 1.41 1.41" />
+          <path d="M2 12h20" />
+          <path d="m4.93 19.07 1.41-1.41" />
+          <path d="m17.66 6.34 1.41-1.41" />
+        </svg>
+      );
+    case "sparkles":
+      return (
+        <svg {...shared}>
+          <path d="M12 3 13.8 8.2 19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
 
-          <nav className="mt-4 hidden items-center gap-2 md:flex">
-            {navItems.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="rounded-xl border border-transparent px-4 py-2 text-sm font-medium text-slate-300 transition hover:border-white/10 hover:bg-white/5 hover:text-white"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </header>
+function FloatingAmbience({ mode, theme }) {
+  const items = useMemo(() => Array.from({ length: mode === "snow" ? 24 : 18 }, (_, i) => i), [mode]);
+  const particleColor = theme === "dark" ? "bg-white/40" : "bg-slate-400/30";
+  const rainColor = theme === "dark" ? "bg-white/25" : "bg-slate-500/20";
+  const snowColor = theme === "dark" ? "text-white/80" : "text-slate-500/70";
 
-      <motion.section
-        id="top"
-        className="relative overflow-hidden border-b border-white/10 scroll-mt-24"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.14),transparent_26%),radial-gradient(circle_at_left,rgba(168,85,247,0.10),transparent_24%)]" />
-        <div className="relative mx-auto max-w-7xl px-6 py-20 md:px-10 lg:px-12 lg:py-28">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.2fr_0.8fr]">
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-            >
-              <div className="mb-6 inline-flex items-center rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-1.5 text-sm text-cyan-300 shadow-sm shadow-cyan-500/10">
-                My Portfolio
-              </div>
-
-              <h1 className="max-w-4xl text-4xl font-black leading-tight tracking-tight text-white md:text-6xl">
-                Mayukh Ghosh
-                <span className="mt-2 block bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent">
-                  Web Developer • ML Enthusiast • Problem Solver
-                </span>
-              </h1>
-
-              <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
-                I build clean web experiences, solve data structures problems consistently, and explore machine learning through practical projects. My aim is to grow into a strong software engineer with depth in problem solving and product building.
-              </p>
-
-              <div className="mt-8 flex flex-wrap gap-4">
-                <motion.a
-                  href="#projects"
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="rounded-2xl bg-white px-6 py-3 text-sm font-semibold text-slate-950 transition hover:shadow-xl"
-                >
-                  View Projects
-                </motion.a>
-                <motion.a
-                  href="#contact"
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="rounded-2xl border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10"
-                >
-                  Contact Me
-                </motion.a>
-              </div>
-
-              <div className="mt-10 grid gap-4 sm:grid-cols-3">
-                {stats.map((item, index) => (
-                  <motion.div
-                    key={item.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45, delay: 0.25 + index * 0.1 }}
-                    className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm"
-                  >
-                    <div className="text-2xl font-bold text-white">{item.value}</div>
-                    <div className="mt-1 text-sm text-slate-400">{item.label}</div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div
-              className="relative"
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.75, delay: 0.2 }}
-            >
-              <div className="absolute -inset-8 rounded-full bg-cyan-500/10 blur-3xl" />
-              <div className="relative rounded-[2rem] border border-white/10 bg-gradient-to-b from-slate-900 to-slate-950 p-6 shadow-2xl shadow-cyan-950/20">
-                <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/80 p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-slate-400">Currently focused on</p>
-                      <h3 className="mt-1 text-xl font-bold text-white">Web Dev + DSA + ML</h3>
-                    </div>
-                    <motion.div
-                      className="h-3 w-3 rounded-full bg-emerald-400 shadow-lg shadow-emerald-500/50"
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 1.8, repeat: Infinity }}
-                    />
-                  </div>
-
-                  <div className="mt-6 space-y-4">
-                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                      <p className="text-sm text-slate-400">Primary Strength</p>
-                      <p className="mt-1 font-semibold text-white">Consistent problem solving and hands-on learning</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                      <p className="text-sm text-slate-400">Development Stack</p>
-                      <p className="mt-1 font-semibold text-white">Java, Python, C++, Web Technologies</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                      <p className="text-sm text-slate-400">Career Direction</p>
-                      <p className="mt-1 font-semibold text-white">Software Engineering / Full Stack / ML-Driven Products</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </motion.section>
-
-      <motion.section
-        id="about"
-        className="mx-auto max-w-7xl scroll-mt-24 px-6 py-16 md:px-10 lg:px-12"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-          <SectionTitle
-            eyebrow="About Me"
-            title="Building skills with consistency, curiosity, and execution."
+  if (mode === "clear") {
+    return (
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {items.map((i) => (
+          <motion.div
+            key={i}
+            className={cn("absolute rounded-full blur-[1px]", particleColor)}
+            initial={{ opacity: 0.08, y: 20, scale: 0.8 }}
+            animate={{ opacity: [0.05, 0.22, 0.08], y: [20, -30, 20], x: [0, i % 2 === 0 ? 24 : -24, 0], scale: [0.8, 1.2, 0.9] }}
+            transition={{ duration: 7 + (i % 5), repeat: Infinity, delay: i * 0.25 }}
+            style={{ width: `${4 + (i % 3) * 2}px`, height: `${4 + (i % 3) * 2}px`, left: `${(i * 7) % 100}%`, top: `${(i * 11) % 100}%` }}
           />
-          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-7 text-slate-300 backdrop-blur-sm">
-            <p className="leading-8">
-              I am a computer science student who enjoys creating practical projects and improving through steady daily work. My journey combines web development, data structures and algorithms, and machine learning.
-            </p>
-            <p className="mt-4 leading-8">
-              I am especially interested in writing clean code, understanding the logic behind systems, and building projects that reflect both technical ability and growth mindset.
-            </p>
-          </div>
-        </div>
-      </motion.section>
+        ))}
+      </div>
+    );
+  }
 
-      <motion.section
-        id="skills"
-        className="mx-auto max-w-7xl scroll-mt-24 px-6 py-8 md:px-10 lg:px-12"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.6 }}
+  if (mode === "rain") {
+    return (
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {items.map((i) => (
+          <motion.div
+            key={i}
+            className={cn("absolute w-px rounded-full", rainColor)}
+            initial={{ y: -120, opacity: 0.12 }}
+            animate={{ y: [0, 900], opacity: [0.12, 0.35, 0.12] }}
+            transition={{ duration: 1 + (i % 4) * 0.18, repeat: Infinity, delay: i * 0.08, ease: "linear" }}
+            style={{ height: `${44 + (i % 4) * 14}px`, left: `${(i * 6) % 100}%`, top: `-${(i % 6) * 30}px`, rotate: "14deg" }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {items.map((i) => (
+        <motion.div
+          key={i}
+          className={cn("absolute select-none", snowColor)}
+          initial={{ y: -40, opacity: 0.15, rotate: 0 }}
+          animate={{ y: [0, 820], x: [0, i % 2 === 0 ? 26 : -26, 0], opacity: [0.15, 0.9, 0.2], rotate: [0, 120, 240] }}
+          transition={{ duration: 7 + (i % 6), repeat: Infinity, delay: i * 0.22, ease: "linear" }}
+          style={{ left: `${(i * 5) % 100}%`, top: `-${(i % 6) * 28}px`, fontSize: `${10 + (i % 4) * 4}px` }}
+        >
+          ✦
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+export default function MayukhPortfolioSite() {
+  const [active, setActive] = useState("home");
+  const [theme, setTheme] = useState("dark");
+  const [ambience, setAmbience] = useState("clear");
+  const [themeMode, setThemeMode] = useState("auto");
+
+  useEffect(() => {
+    if (themeMode === "auto") {
+      setTheme(getAutoThemeFromHour(new Date().getHours()));
+    }
+  }, [themeMode]);
+
+  const isDark = theme === "dark";
+  const pageBg = isDark ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900";
+  const panel = isDark ? "border-white/20 bg-white/10 shadow-lg" : "border-slate-200 bg-white/85 shadow-sm";
+  const subText = isDark ? "text-slate-200" : "text-slate-600";
+  const headerGlass = isDark ? "border-white/20 supports-[backdrop-filter]:bg-slate-900/60" : "border-slate-200 supports-[backdrop-filter]:bg-white/75";
+  const ghostButton = isDark ? "text-slate-100 hover:bg-white/10 hover:text-white border-white/30 bg-white/5" : "text-slate-700 hover:bg-slate-100 hover:text-slate-900 border-slate-300 bg-white";
+  const softBadge = isDark ? "border border-white/15 bg-white/15 text-slate-100" : "border border-slate-200 bg-slate-100 text-slate-800";
+  const stackBadge = isDark ? "border border-white/20 bg-white/5 text-slate-100" : "border border-slate-200 bg-white text-slate-700";
+  const socialLink = isDark ? "border border-white/30 bg-white/10 text-slate-50 hover:bg-white/15 hover:text-white" : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900";
+
+  function SocialLink({ href, label, icon, children }) {
+    return (
+      <a
+        href={href}
+        target={href.startsWith("http") ? "_blank" : undefined}
+        rel={href.startsWith("http") ? "noreferrer" : undefined}
+        className={cn("inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm shadow-sm transition hover:scale-[1.02]", socialLink)}
       >
-        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur-sm">
-          <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <SectionTitle
-              eyebrow="Skills"
-              title="Technical Toolkit"
-              subtitle="A balanced mix of programming, development, and analytical problem-solving skills."
-            />
-          </div>
+        <Icon name={icon} className="h-4 w-4" />
+        {children || label}
+      </a>
+    );
+  }
 
-          <div className="flex flex-wrap gap-3">
-            {skills.map((skill, index) => (
-              <motion.span
-                key={skill}
-                initial={{ opacity: 0, scale: 0.85 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.25, delay: index * 0.04 }}
-                className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-sm font-medium text-cyan-100"
+  const sectionContent = {
+    home: (
+      <div className="grid gap-6 lg:grid-cols-[1.3fr_0.9fr]">
+        <Panel className={cn("rounded-3xl border shadow-xl backdrop-blur", panel)}>
+          <PanelBody className="p-8 md:p-10">
+            <div className={cn("mb-4 flex items-center gap-2 text-sm uppercase tracking-[0.25em]", isDark ? "text-slate-300" : "text-slate-500")}>
+              <Icon name="sparkles" className="h-4 w-4" /> Portfolio
+            </div>
+            <h1 className={cn("max-w-2xl text-4xl font-bold leading-tight md:text-6xl", isDark ? "text-white" : "text-slate-900")}>{profile.name}</h1>
+            <p className={cn("mt-3 text-xl md:text-2xl", isDark ? "text-slate-100" : "text-slate-800")}>{profile.title}</p>
+            <p className={cn("mt-5 max-w-2xl text-base leading-7", subText)}>{profile.tagline}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <ActionButton className="rounded-2xl bg-blue-600 text-white hover:bg-blue-500" onClick={() => setActive("projects")}>View Projects</ActionButton>
+              <ActionButton className={cn("rounded-2xl", ghostButton)} onClick={() => setActive("about")}>About Me</ActionButton>
+              <a
+                href={profile.resume}
+                target={profile.resume !== "#" ? "_blank" : undefined}
+                rel={profile.resume !== "#" ? "noreferrer" : undefined}
+                className={cn("inline-flex items-center justify-center gap-2 rounded-2xl border px-4 py-2 text-sm font-medium transition duration-200", ghostButton)}
               >
-                {skill}
-              </motion.span>
-            ))}
-          </div>
-        </div>
-      </motion.section>
-
-      <motion.section
-        id="projects"
-        className="mx-auto max-w-7xl scroll-mt-24 px-6 py-16 md:px-10 lg:px-12"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.15 }}
-        transition={{ duration: 0.6 }}
-      >
-        <SectionTitle
-          eyebrow="Projects"
-          title="Featured Work"
-          subtitle="A few selected areas that represent my learning, technical foundation, and practical execution."
-        />
-
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {projects.map((project, index) => (
-            <motion.div
-              key={project.title}
-              className="group rounded-[2rem] border border-white/10 bg-gradient-to-b from-white/8 to-white/5 p-6 transition duration-300 hover:border-cyan-400/30 hover:shadow-2xl hover:shadow-cyan-950/30"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.5, delay: index * 0.12 }}
-              whileHover={{ y: -6 }}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <span className="rounded-full border border-violet-400/20 bg-violet-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-violet-200">
-                  {project.tag}
-                </span>
-                <span className="text-slate-500 transition group-hover:text-cyan-300">↗</span>
-              </div>
-              <h3 className="mt-5 text-xl font-bold text-white">{project.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-slate-400">{project.description}</p>
-              <div className="mt-5 flex flex-wrap gap-2">
-                {project.stack.map((item) => (
-                  <span
-                    key={item}
-                    className="rounded-xl border border-white/10 bg-slate-900/80 px-3 py-1.5 text-xs font-medium text-slate-300"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
-
-      <motion.section
-        className="mx-auto max-w-7xl px-6 py-8 md:px-10 lg:px-12"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur-sm">
-            <SectionTitle eyebrow="Education" title="Academic Snapshot" />
-            <div className="mt-6 space-y-4">
-              <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-5">
-                <p className="text-sm text-slate-400">Current</p>
-                <p className="mt-1 text-lg font-semibold text-white">B.Tech in Computer Science(KIIT)</p>
-                <p className="mt-1 text-sm text-slate-400">Focused on software development, machine learning, and problem solving</p>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-5">
-                  <p className="text-sm text-slate-400">CGPA(out of 10)</p>
-                  <p className="mt-1 text-xl font-bold text-white">7.0</p>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-5">
-                  <p className="text-sm text-slate-400">12th Score(CBSE)</p>
-                  <p className="mt-1 text-xl font-bold text-white">80%</p>
-                </div>
-              </div>
+                Resume <Icon name="external" className="h-4 w-4" />
+              </a>
             </div>
-          </div>
+            <div className="mt-8 flex flex-wrap gap-3">
+              {skills.slice(0, 6).map((skill) => (
+                <Tag key={skill} className={cn("rounded-xl px-3 py-1 text-sm", softBadge)}>
+                  {skill}
+                </Tag>
+              ))}
+            </div>
+          </PanelBody>
+        </Panel>
 
-          <div id="contact" className="scroll-mt-24 rounded-[2rem] border border-white/10 bg-gradient-to-br from-cyan-500/10 to-violet-500/10 p-8 backdrop-blur-sm">
-            <SectionTitle eyebrow="Contact" title="Let’s build something meaningful." />
-            <p className="mt-4 max-w-xl leading-8 text-slate-300">
-              I am open to internships, collaborations, and opportunities where I can learn, contribute, and grow as a developer.
+        <div className="grid gap-6">
+          <Panel className={cn("rounded-3xl border shadow-xl backdrop-blur", panel)}>
+            <PanelBody className="p-6">
+              <div className={cn("mb-4 flex items-center gap-2 text-lg font-semibold", isDark ? "text-white" : "text-slate-900")}>
+                <Icon name="user" className="h-5 w-5" /> Snapshot
+              </div>
+              <div className={cn("space-y-3 text-sm", subText)}>
+                <p>{profile.about}</p>
+                <p>{profile.education}</p>
+                <p>Focused on building a strong base in DSA, development, and applied ML.</p>
+              </div>
+            </PanelBody>
+          </Panel>
+
+          <Panel className={cn("rounded-3xl border shadow-xl backdrop-blur", panel)}>
+            <PanelBody className="p-6">
+              <div className={cn("mb-4 flex items-center gap-2 text-lg font-semibold", isDark ? "text-white" : "text-slate-900")}>
+                <Icon name="code" className="h-5 w-5" /> Links
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <SocialLink href={profile.github} label="GitHub" icon="github" />
+                <SocialLink href={profile.linkedin} label="LinkedIn" icon="linkedin" />
+                <SocialLink href={`mailto:${profile.email}`} label="Email" icon="mail" />
+                <SocialLink href={profile.resume} label="Resume" icon="external" />
+              </div>
+            </PanelBody>
+          </Panel>
+        </div>
+      </div>
+    ),
+    about: (
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Panel className={cn("rounded-3xl border", panel)}>
+          <PanelBody className="p-8">
+            <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-slate-900")}>About Me</h2>
+            <p className={cn("mt-4 leading-7", subText)}>{profile.about}</p>
+            <p className={cn("mt-4 leading-7", subText)}>
+              I like websites that feel human, not robotic. That is why this design blends personality, motion, and clarity.
             </p>
+          </PanelBody>
+        </Panel>
+        <Panel className={cn("rounded-3xl border", panel)}>
+          <PanelBody className="p-8">
+            <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-slate-900")}>Skills</h2>
+            <div className="mt-5 flex flex-wrap gap-3">
+              {skills.map((skill) => (
+                <Tag key={skill} className={cn("rounded-xl px-3 py-1 text-sm", softBadge)}>{skill}</Tag>
+              ))}
+            </div>
+          </PanelBody>
+        </Panel>
+      </div>
+    ),
+    projects: (
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {projects.map((project) => (
+          <motion.div key={project.title} whileHover={{ y: -6 }}>
+            <Panel className={cn("h-full overflow-hidden rounded-3xl border", panel)}>
+              <PanelBody className="flex h-full flex-col p-6">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <Tag className={cn("rounded-xl border border-blue-400/30", isDark ? "bg-blue-500/20 text-blue-100" : "bg-blue-50 text-blue-700")}>{project.type}</Tag>
+                  {project.featured && <Tag className={cn("rounded-xl border border-emerald-400/30", isDark ? "bg-emerald-500/20 text-emerald-100" : "bg-emerald-50 text-emerald-700")}>Featured</Tag>}
+                </div>
+                <h3 className={cn("text-xl font-semibold", isDark ? "text-white" : "text-slate-900")}>{project.title}</h3>
+                <p className={cn("mt-3 flex-1 text-sm leading-6", subText)}>{project.description}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {project.stack.map((item) => (
+                    <Tag key={item} className={cn("rounded-xl", stackBadge)}>{item}</Tag>
+                  ))}
+                </div>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <a
+                    href={project.links.live}
+                    target={project.links.live !== "#" ? "_blank" : undefined}
+                    rel={project.links.live !== "#" ? "noreferrer" : undefined}
+                    className={cn("inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition", isDark ? "border-white/10 bg-white/5 text-blue-300 hover:bg-white/10 hover:text-blue-200" : "border-slate-200 bg-white text-blue-700 hover:bg-slate-50 hover:text-blue-800")}
+                  >
+                    Live <Icon name="external" className="h-4 w-4" />
+                  </a>
+                  <a
+                    href={project.links.code}
+                    target={project.links.code !== "#" ? "_blank" : undefined}
+                    rel={project.links.code !== "#" ? "noreferrer" : undefined}
+                    className={cn("inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition", isDark ? "border-white/10 bg-white/5 text-blue-300 hover:bg-white/10 hover:text-blue-200" : "border-slate-200 bg-white text-blue-700 hover:bg-slate-50 hover:text-blue-800")}
+                  >
+                    Code <Icon name="github" className="h-4 w-4" />
+                  </a>
+                </div>
+              </PanelBody>
+            </Panel>
+          </motion.div>
+        ))}
+      </div>
+    ),
+    contact: (
+      <Panel className={cn("rounded-3xl border", panel)}>
+        <PanelBody className="p-8">
+          <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-slate-900")}>Contact</h2>
+          <p className={cn("mt-3", subText)}>For collaborations, project discussions, or just to say hello.</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <SocialLink href={`mailto:${profile.email}`} label={profile.email} icon="mail" />
+            <SocialLink href={profile.github} label="GitHub" icon="github" />
+            <SocialLink href={profile.linkedin} label="LinkedIn" icon="linkedin" />
+            <SocialLink href={profile.resume} label="Resume" icon="external" />
+          </div>
+        </PanelBody>
+      </Panel>
+    ),
+  };
 
-            <div className="mt-6 space-y-4 text-sm text-slate-200">
-              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                <span className="text-slate-400">Email</span>
-                <div className="mt-1 font-medium">23052334@kiit.ac.in</div>
+  return (
+    <div className={cn("min-h-screen transition-colors duration-500", pageBg)}>
+      <div className="relative isolate overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.18),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(34,197,94,0.15),transparent_24%)]" />
+        <div className={cn("absolute inset-0 opacity-60", isDark ? "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_35%)]" : "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.55),transparent_30%)]")} />
+        <FloatingAmbience mode={ambience} theme={theme} />
+
+        <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <header className={cn("sticky top-4 z-20 mb-8 rounded-3xl border backdrop-blur", headerGlass)}>
+            <div className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <div className={cn("text-lg font-bold tracking-tight", isDark ? "text-white" : "text-slate-900")}>Mayukh.dev</div>
+                <div className={cn("text-sm", isDark ? "text-slate-200" : "text-slate-600")}>Personal portfolio</div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                <span className="text-slate-400">Phone</span>
-                <div className="mt-1 font-medium">+91 9432416468</div>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                <span className="text-slate-400">LinkedIn</span>
-                <div className="mt-1 break-all font-medium">www.linkedin.com/in/mayukh-ghosh-0259153b5</div>
+
+              <nav className="flex flex-wrap gap-2">
+                {sections.map((section) => (
+                  <ActionButton
+                    key={section.id}
+                    className={cn(
+                      "rounded-2xl",
+                      active === section.id ? "bg-blue-600 text-white hover:bg-blue-500" : ghostButton
+                    )}
+                    onClick={() => setActive(section.id)}
+                  >
+                    {section.label}
+                  </ActionButton>
+                ))}
+              </nav>
+
+              <div className="flex flex-wrap gap-2">
+                <ActionButton
+                  className={cn("rounded-2xl", ghostButton)}
+                  onClick={() => {
+                    if (themeMode === "auto") setThemeMode("manual");
+                    setTheme(isDark ? "light" : "dark");
+                  }}
+                >
+                  {isDark ? <Icon name="sun" className="h-4 w-4" /> : <Icon name="moon" className="h-4 w-4" />}
+                </ActionButton>
+                <ActionButton
+                  className={cn("rounded-2xl text-xs", themeMode === "auto" ? "bg-blue-600 text-white hover:bg-blue-500" : ghostButton)}
+                  onClick={() => setThemeMode(themeMode === "auto" ? "manual" : "auto")}
+                >
+                  Auto
+                </ActionButton>
+                <ActionButton
+                  className={cn("rounded-2xl", ambience === "clear" ? "bg-blue-600 text-white hover:bg-blue-500" : ghostButton)}
+                  onClick={() => setAmbience("clear")}
+                >
+                  <Icon name="sparkles" className="h-4 w-4" />
+                </ActionButton>
+                <ActionButton
+                  className={cn("rounded-2xl", ambience === "rain" ? "bg-blue-600 text-white hover:bg-blue-500" : ghostButton)}
+                  onClick={() => setAmbience("rain")}
+                >
+                  <Icon name="rain" className="h-4 w-4" />
+                </ActionButton>
+                <ActionButton
+                  className={cn("rounded-2xl", ambience === "snow" ? "bg-blue-600 text-white hover:bg-blue-500" : ghostButton)}
+                  onClick={() => setAmbience("snow")}
+                >
+                  <Icon name="snow" className="h-4 w-4" />
+                </ActionButton>
               </div>
             </div>
-          </div>
-        </div>
-      </motion.section>
+          </header>
 
-      <footer className="mx-auto max-w-7xl px-6 py-10 text-center text-sm text-slate-500 md:px-10 lg:px-12">
-        Designed to showcase projects, consistency, and growth.
-      </footer>
+          <AnimatePresence mode="wait">
+            <motion.main
+              key={active}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -18 }}
+              transition={{ duration: 0.28 }}
+            >
+              {sectionContent[active]}
+            </motion.main>
+          </AnimatePresence>
+
+          <footer className={cn("mt-10 rounded-3xl border p-5 text-sm", panel)}>
+            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+              <div className={cn(isDark ? "text-slate-100" : "text-slate-700")}>Built for clarity, personality, and better project discovery.</div>
+            </div>
+          </footer>
+        </div>
+      </div>
     </div>
   );
 }
